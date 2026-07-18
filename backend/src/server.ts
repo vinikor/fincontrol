@@ -2,11 +2,11 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 
-import authRouter from "./router/auth.router.js";
+import authRouter from "./routers/auth.router.js";
 
 dotenv.config();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -22,5 +22,5 @@ app.get("/", (req, res) => {
 
 
 app.listen(PORT, () => {
-    console.log(`Servidor iniciado na porta ${PORT}`);
+    console.log(`✅ Servidor iniciado na porta http://localhost:${PORT}`);
 })

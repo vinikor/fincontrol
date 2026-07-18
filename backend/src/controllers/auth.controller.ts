@@ -1,30 +1,56 @@
 import { Request, Response } from "express";
-import { createUser } from "../services/auth.service.js";
+import authService from "../services/auth.service.js";
+import { RegisterDTO, LoginDTO } from "../dtos/auth.dto.js";
 
 
-export const register = async (req: Request, res: Response) => {
 
-    try {
-        const { name, email, password } = req.body;
+class AuthController {
 
-        if (!name || !email || !password) {
-            return res.status(400).json({ message: "Dados inválidos. Verifique os campos obrigatórios." });
+
+
+    async register(req: Request, res: Response) {
+
+        try {
+            const data: RegisterDTO = req.body;
+
+            const user = await authService.register(data);
+
+            return res.status(201).json(user);
+
+
+        } catch (error) {
+            console.error("Erro ao cadastrar usuário:", error);
+            if (error instanceof Error) {
+                return res.status(400).json({
+                    message: error.message
+                });
+            }
+
+            return res.status(500).json({
+                message: "Erro interno do servidor"
+            });
         }
-        if (name.trim().length < 3) {
-            return res.status(400).json({ message: "O nome deve ter no mínimo 3 caracteres." });
-        }
-        if (!email.includes("@")) {
-            return res.status(400).json({ message: "O email não é válido." });
-        }
-        if (password.length < 8) {
-            return res.status(400).json({ message: "A senha deve ter no mínimo 8 caracteres." });
-        }
-
-      
-        return await createUser(req, res);
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Ocorreu um erro interno no servidor. Tente novamente mais tarde." });
     }
-};
+
+    async login(req: Request, res: Response) {
+        try {
+            const data: LoginDTO = req.body;
+            const dataUser = await authService.login(data);
+            return res.status(200).json(dataUser);
+
+        } catch (error) {
+            if (error instanceof Error) {
+                return res.status(400).json({
+                    message: error.message
+                });
+            }
+
+            return res.status(500).json({
+                message: "Erro interno do servidor"
+            });
+        }
+
+    }
+
+}
+export default new AuthController();
